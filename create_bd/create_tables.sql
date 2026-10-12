@@ -5,10 +5,13 @@ USE CompuComisiones;
 GO
 
 -- Limpiar base de datos
+DROP TABLE IF EXISTS reports.commission_calculation;
 DROP TABLE IF EXISTS reports.payment;
 
 DROP TABLE IF EXISTS reports.commission;
 DROP TABLE IF EXISTS reports.commission_plan_history;
+
+DROP TABLE IF EXISTS reports.works_under;
 
 DROP TABLE IF EXISTS reports.finance_team_member;
 DROP TABLE IF EXISTS reports.sales_rep;
@@ -70,6 +73,18 @@ CREATE TABLE reports.finance_team_member (
 
     CONSTRAINT FK_Finance_Person FOREIGN KEY (id) REFERENCES reports.person(id)
         ON DELETE CASCADE
+) ON FG_Tables;
+GO
+
+CREATE TABLE reports.works_under (
+    sales_rep_id INT,
+    supervisor_id INT,
+    validity_date DATE NOT NULL,
+    recognition_rate DECIMAL(5, 4) NOT NULL,
+
+    CONSTRAINT PK_Works_Under PRIMARY KEY (sales_rep_id, supervisor_id, validity_date),
+    CONSTRAINT FK_Works_Under_Sales_Rep_Id FOREIGN KEY (sales_rep_id) REFERENCES reports.sales_rep(id),
+    CONSTRAINT FK_Works_Under_Supervisor_Id FOREIGN KEY (supervisor_id) REFERENCES reports.supervisor(id)
 ) ON FG_Tables;
 GO
 
