@@ -5,6 +5,7 @@ USE CompuComisiones;
 GO
 
 -- Limpiar base de datos
+DROP TABLE IF EXISTS reports.commission;
 DROP TABLE IF EXISTS reports.commission_plan_history;
 
 DROP TABLE IF EXISTS reports.finance_team_member;
@@ -112,6 +113,7 @@ CREATE TABLE reports.recit_detail (
     product_subtotal DECIMAL(12, 2) NOT NULL,
     sale_concept VARCHAR(150),
 
+    CONSTRAINT PK_Recit_detail PRIMARY KEY (number_recit, product_id),
     CONSTRAINT FK_number_recit FOREIGN KEY (number_recit) REFERENCES reports.recit(number),
     CONSTRAINT FK_product_recit FOREIGN KEY (product_id) REFERENCES reports.product(id)
 ) ON FG_Tables;
@@ -124,6 +126,22 @@ CREATE TABLE reports.role (
     id INT PRIMARY KEY,
     name VARCHAR(20) NOT NULL,
     description VARCHAR(150) NOT NULL
+) ON FG_Tables;
+GO
+
+CREATE TABLE reports.commission (
+    sales_rep_id INT NOT NULL,
+    role_id INT NOT NULL,
+    recit_number INT NOT NULL,
+    participation_percentage DECIMAL(3, 2),
+
+    CONSTRAINT PK_Commission PRIMARY KEY (sales_rep_id, role_id, recit_number),
+    CONSTRAINT FK_Commission_Sales_Rep_Id FOREIGN KEY (sales_rep_id)
+        REFERENCES reports.sales_rep(id),
+    CONSTRAINT FK_Commission_Role_Id FOREIGN KEY (role_id)
+        REFERENCES reports.role(id),
+    CONSTRAINT FK_Commission_Recit_Number FOREIGN KEY (recit_number)
+        REFERENCES reports.recit(number)
 ) ON FG_Tables;
 GO
 
@@ -160,12 +178,12 @@ CREATE TABLE reports.commission_plan_history (
     commission_plan_code INT NOT NULL,
     start_date DATE,
 
-    CONSTRAINT PK_commission_plan_history PRIMARY KEY (sales_rep_id, role_id, commission_plan_code, start_date),
-    CONSTRAINT FK_Sales_Rep_Id FOREIGN KEY (sales_rep_id)
+    CONSTRAINT PK_Commission_Plan_History PRIMARY KEY (sales_rep_id, role_id, commission_plan_code, start_date),
+    CONSTRAINT FK_Commission_Plan_Hist_Sales_Rep_Id FOREIGN KEY (sales_rep_id)
         REFERENCES reports.sales_rep(id),
-    CONSTRAINT FK_Role_Id FOREIGN KEY (role_id)
+    CONSTRAINT FK_Commission_Plan_Hist_Role_Id FOREIGN KEY (role_id)
         REFERENCES reports.role(id),
-    CONSTRAINT FK_Commission_Plan_Code FOREIGN KEY (commission_plan_code)
+    CONSTRAINT FK_Commission_Plan_Hist_Code FOREIGN KEY (commission_plan_code)
         REFERENCES reports.commission_plan(code)
 ) ON FG_Tables;
 GO
