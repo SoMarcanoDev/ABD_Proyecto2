@@ -5,6 +5,8 @@ USE CompuComisiones;
 GO
 
 -- Limpiar base de datos
+DROP TABLE IF EXISTS reports.payment;
+
 DROP TABLE IF EXISTS reports.commission;
 DROP TABLE IF EXISTS reports.commission_plan_history;
 
@@ -22,6 +24,8 @@ DROP TABLE IF EXISTS reports.role;
 
 DROP TABLE IF EXISTS reports.filter;
 DROP TABLE IF EXISTS reports.commission_plan;
+
+DROP TABLE IF EXISTS reports.period;
 
 -- Crear tablas
 
@@ -191,13 +195,45 @@ GO
 -- ============================================================
 -- Periodo
 -- ============================================================
+CREATE TABLE reports.period (
+    id INT PRIMARY KEY,
+    description VARCHAR(150) NOT NULL,
+    aditional_notes VARCHAR(255),
+    type VARCHAR(10) NOT NULL,
+    start_date DATE,
+    end_date DATE,
 
+    CONSTRAINT CK_Period_Type CHECK (LOWER(type) IN ('weekly', 'monthly', 'quarterly', 'anual'))
+) ON FG_Tables;
+GO
 
 -- ============================================================
 -- Pago
 -- ============================================================
+CREATE TABLE reports.payment (
+    person_id INT,
+    period_id INT,
+    amount DECIMAL(12, 2) NOT NULL,
+    date_paid DATE,
+    status VARCHAR(10),
 
+    CONSTRAINT PK_Payment PRIMARY KEY (period_id, person_id),
+    CONSTRAINT FK_Payment_Person_Id FOREIGN KEY (person_id) REFERENCES reports.person,
+    CONSTRAINT FK_Payment_Period_Id FOREIGN KEY (period_id) REFERENCES reports.period
+) ON FG_Tables;
+GO
 
 -- ============================================================
--- Calculo de comisiones??
+-- Calculo de comisiones
 -- ============================================================
+CREATE TABLE reports.commission_calculation (
+    person_id INT, --usamos un trigger para verificar que no sea el id de una persona de finanza
+    period_id INT,
+    amount DECIMAL(12, 2) NOT NULL,
+    status VARCHAR(10),
+
+    CONSTRAINT PK_Commission_Calc PRIMARY KEY (period_id, person_id),
+    CONSTRAINT FK_Commission_Calc_Person_Id FOREIGN KEY (person_id) REFERENCES reports.person,
+    CONSTRAINT FK_Commission_Calc_Period_Id FOREIGN KEY (period_id) REFERENCES reports.period
+) ON FG_Tables;
+GO
