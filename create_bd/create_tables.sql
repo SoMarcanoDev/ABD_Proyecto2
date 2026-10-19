@@ -129,13 +129,18 @@ GO
 -- ============================================================
 CREATE TABLE reports.recit (
     number INT NOT NULL,
-    date_created DATE,
+    date_created DATE NOT NULL,
     status VARCHAR(15) NOT NULL,
     client_id INT NOT NULL, -- Relation Has
+    date_paid DATE,
 
     CONSTRAINT number_recit_indx PRIMARY KEY NONCLUSTERED (number) ON FG_Indices,
     CONSTRAINT CK_Recit_Status CHECK (LOWER(status) IN ('paid', 'issued', 'canceled')),
-    CONSTRAINT FK_client_recit FOREIGN KEY (client_id) REFERENCES reports.client(id)
+    CONSTRAINT CK_Date_Paid_Status CHECK (
+        (LOWER(status) != 'paid' OR date_paid IS NOT NULL) -- si esta pagada es no nula
+        AND (LOWER(status) = 'paid' OR date_paid IS NULL)  -- si no esta pagada es nula
+    ),
+    CONSTRAINT FK_client_recit FOREIGN KEY (client_id) REFERENCES reports.client(id),
 ) ON FG_Tables;
 GO
 
@@ -192,6 +197,7 @@ CREATE TABLE reports.commission_plan (
     name VARCHAR(20), -- se identifica tambien por este pero creo que vale hacer un indice y ya
     commission_rate DECIMAL(5, 4) NOT NULL,
     base VARCHAR(10) NOT NULL,
+    discount BIT NOT NULL CONSTRAINT DF_Has_Discount DEFAULT 0,
     
     CONSTRAINT code_commission_plan_indx PRIMARY KEY NONCLUSTERED (code) ON FG_Indices,
     CONSTRAINT CK_Commission_Plan_Base CHECK (LOWER(base) IN ('income', 'margin', 'quantity'))
