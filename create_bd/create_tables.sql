@@ -164,7 +164,7 @@ GO
 -- ============================================================
 CREATE TABLE reports.role (
     id INT NOT NULL,
-    name VARCHAR(20) NOT NULL,
+    name VARCHAR(25) NOT NULL,
     description VARCHAR(150) NOT NULL,
 
     CONSTRAINT id_role_indx PRIMARY KEY NONCLUSTERED (id) ON FG_Indices
