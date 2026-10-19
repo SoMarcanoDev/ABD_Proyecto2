@@ -51,6 +51,7 @@ BEGIN
     END;
 
     -- Luego verifica la cadena de supervision en busca de ciclos
+    DECLARE @has_cycle INT = 0;
     WITH superiorChain (original_id, current_id, superior_id) AS (
         -- caso base
         SELECT 
@@ -66,11 +67,11 @@ BEGIN
         FROM superiorChain sc
         JOIN reports.supervisor s ON sc.superior_id = s.id
     )
-    SELECT 1
+    SELECT TOP 1 @has_cycle = 1
     FROM superiorChain
     WHERE original_id = current_id
 
-    IF @@ROWCOUNT > 0
+    IF @has_cycle = 1
     BEGIN
         RAISERROR ('Un supervisor no puede ser superior de un superior suyo.', 16, 1);
         ROLLBACK TRANSACTION;
@@ -116,6 +117,10 @@ BEGIN
 
     INSERT INTO reports.sales_rep (id, sales_quota)
     SELECT id, sales_quota
+    FROM inserted;
+
+    INSERT INTO reports.works_under (sales_rep_id, supervisor_id, validity_date, recognition_rate)
+    SELECT id, supervisor_id, supervisor_validity_date, recognition_rate
     FROM inserted;
 END;
 GO

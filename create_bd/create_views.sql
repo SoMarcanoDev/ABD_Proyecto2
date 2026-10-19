@@ -17,9 +17,18 @@ GO
 -- Vendedor
 -- ============================================================
 CREATE VIEW reports.vw_sales_rep AS (
-    SELECT p.*, s.sales_quota
+    SELECT p.*, s.sales_quota, wu.supervisor_id, wu.validity_date AS supervisor_validity_date, wu.recognition_rate
     FROM reports.person p
     JOIN reports.sales_rep s ON p.id = s.id
+    OUTER APPLY (
+        SELECT TOP 1
+            w.supervisor_id, 
+            w.validity_date, 
+            w.recognition_rate
+        FROM reports.works_under w
+        WHERE w.sales_rep_id = p.id
+        ORDER BY w.validity_date DESC
+    ) wu
 );
 GO
 

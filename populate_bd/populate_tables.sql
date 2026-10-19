@@ -5,6 +5,7 @@ USE CompuComisiones;
 GO
 
 -- Limpiar tablas 
+DELETE FROM reports.works_under;
 DELETE FROM reports.sales_rep;
 DELETE FROM reports.supervisor;
 DELETE FROM reports.finance_team_member;
@@ -12,39 +13,6 @@ DELETE FROM reports.person;
 GO
 
 -- Crear inserciones
-
--- Vendedores
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (1, 'John', 'Doe', 'john@email.com', '2026-03-01', 0, 50000.00);
-
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (2, 'Miguelangel', 'Parra', 'migue13parra@email.com', '2025-06-04', 1, 60000.00);
-
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (3, 'Nuria', 'Torres', 'nunu13@email.com', '2026-09-21', 1, 45000.00);
-
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (4, 'Andrea', 'Novas', 'andromedanovas@email.com', '2024-12-01', 1, 8300.00);
-
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (5, 'Carlos', 'Mendoza', 'carlos.mendoza@email.com', '2025-01-15', 1, 55000.00);
-
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (6, 'Sofia', 'Gomez', 'sofi.gomez@email.com', '2023-11-10', 0, 32000.00);
-
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (7, 'Lucas', 'Silva', 'lucas.silva@email.com', '2026-02-14', 1, 72000.00);
-
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (8, 'Valeria', 'Ruiz', 'valeria.ruiz@email.com', '2025-08-19', 1, 41000.00);
-
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (9, 'Mateo', 'Morales', 'mateo.m@email.com', '2024-05-22', 0, 29000.00);
-
-INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota)
-VALUES (10, 'Lucia', 'Fernandez', 'lucia.f@email.com', '2026-01-05', 1, 95000.00);
-GO
-
 -- Supervisores
 INSERT INTO reports.vw_supervisor (id, first_name, last_name, email, hired_date, status, zone_in_charge, superior_id)
 VALUES (11, 'Roberto', 'Gomez', 'roberto.gomez@email.com', '2023-01-10', 1, 'Northen Region', NULL);
@@ -75,6 +43,38 @@ VALUES (19, 'Martin', 'Pardo', 'martin.pardo@email.com', '2021-04-01', 0, 'Weste
 
 INSERT INTO reports.vw_supervisor (id, first_name, last_name, email, hired_date, status, zone_in_charge, superior_id)
 VALUES (20, 'Paula', 'Rivas', 'paula.rivas@email.com', '2025-05-18', 1, 'District West-A', 19);
+GO
+
+-- Vendedores
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (1, 'John', 'Doe', 'john@email.com', '2026-03-01', 0, 50000.00, 11, '2026-03-01', 0.0500);
+
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (2, 'Miguelangel', 'Parra', 'migue13parra@email.com', '2025-06-04', 1, 60000.00, 12, '2025-06-04', 0.0650);
+
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (3, 'Nuria', 'Torres', 'nunu13@email.com', '2026-09-21', 1, 45000.00, 13, '2026-09-21', 0.0400);
+
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (4, 'Andrea', 'Novas', 'andromedanovas@email.com', '2024-12-01', 1, 8300.00, 14, '2024-12-01', 0.0700);
+
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (5, 'Carlos', 'Mendoza', 'carlos.mendoza@email.com', '2025-01-15', 1, 55000.00, 15, '2025-01-15', 0.0550);
+
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (6, 'Sofia', 'Gomez', 'sofi.gomez@email.com', '2023-11-10', 0, 32000.00, 16, '2023-11-10', 0.0300);
+
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (7, 'Lucas', 'Silva', 'lucas.silva@email.com', '2026-02-14', 1, 72000.00, 17, '2026-02-14', 0.0800);
+
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (8, 'Valeria', 'Ruiz', 'valeria.ruiz@email.com', '2025-08-19', 1, 41000.00, 18, '2025-08-19', 0.0450);
+
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (9, 'Mateo', 'Morales', 'mateo.m@email.com', '2024-05-22', 0, 29000.00, 19, '2024-05-22', 0.0350);
+
+INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
+VALUES (10, 'Lucia', 'Fernandez', 'lucia.f@email.com', '2026-01-05', 1, 95000.00, 20, '2026-01-05', 0.0900);
 GO
 
 -- Equipo de finanzas
