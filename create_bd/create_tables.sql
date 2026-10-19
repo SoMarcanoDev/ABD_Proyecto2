@@ -151,7 +151,7 @@ GO
 -- ============================================================
 CREATE TABLE reports.role (
     id INT PRIMARY KEY,
-    name VARCHAR(20) NOT NULL,
+    name VARCHAR(25) NOT NULL,
     description VARCHAR(150) NOT NULL
 ) ON FG_Tables;
 GO
