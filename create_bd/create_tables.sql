@@ -29,13 +29,16 @@ DROP TABLE IF EXISTS reports.filter;
 DROP TABLE IF EXISTS reports.commission_plan;
 
 DROP TABLE IF EXISTS reports.period;
+GO
 
 -- Crear tablas
 
 -- ============================================================
 -- Personas y roles de la compañía
 -- ============================================================
-
+-- Nadie deberia tener permiso de insertar directamente en estas tablas
+-- Para garantizar que no exista registro de persona sin tipo asociado,
+-- la inserción se deberia hacer por medio de una vista con un trigger
 CREATE TABLE reports.person (
     id INT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
@@ -59,11 +62,11 @@ GO
 CREATE TABLE reports.supervisor (
     id INT PRIMARY KEY,
     zone_in_charge VARCHAR(50) NOT NULL,
-    supervisor_id INT, -- subordinate relationship
+    superior_id INT, -- subordinate relationship
 
     CONSTRAINT FK_Supervisor_Person FOREIGN KEY (id) REFERENCES reports.person(id)
         ON DELETE CASCADE,
-    CONSTRAINT FK_Supervisor_id FOREIGN KEY (id) REFERENCES reports.supervisor(id)
+    CONSTRAINT FK_Superior_id FOREIGN KEY (id) REFERENCES reports.supervisor(id)
 ) ON FG_Tables;
 GO
 
