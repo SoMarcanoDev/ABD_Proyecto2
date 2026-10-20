@@ -10,6 +10,7 @@
 - Ejecutar el script sql `create_indexes.sql`, este script crea los indices que empleara la base de datos
 - Ejecutar el script sql `create_views.sql`, este script crea las vistas de la base de datos
 - Ejecutar el script sql `create_triggers.sql`, este script crea los triggers solicitados en el enunciado y otros triggers que aplican reglas del negocio.
+- Ejecutar el script sql `create_roles.sql`, este script crea el usuario dueño del esquema sin login, los roles y sus permisos
 - Ejecutar el script sql `populate_triggers.sql`, este inserta 10 registros por tabla de la base de datos con valores coherentes y respetando las restricciones de cada valor o columna.
 - TO BE CONTINUED
 
