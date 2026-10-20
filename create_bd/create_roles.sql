@@ -32,10 +32,10 @@ GO
 
 --registrador pueden insertar y modificar sobre personas y facturas
 --tablas de personas y sus tipos
-GRANT SELECT, INSERT, UPDATE ON reports.person TO registrador;
-GRANT SELECT, INSERT, UPDATE ON reports.sales_rep TO registrador;
-GRANT SELECT, INSERT, UPDATE ON reports.supervisor TO registrador;
-GRANT SELECT, INSERT, UPDATE ON reports.finance_team_member TO registrador;
+GRANT SELECT, UPDATE ON reports.person TO registrador;
+GRANT SELECT, UPDATE ON reports.sales_rep TO registrador;
+GRANT SELECT, UPDATE ON reports.supervisor TO registrador;
+GRANT SELECT, UPDATE ON reports.finance_team_member TO registrador;
 GRANT SELECT, INSERT, UPDATE ON reports.works_under TO registrador;
 
 --vistas con triggers de inserción de personas
