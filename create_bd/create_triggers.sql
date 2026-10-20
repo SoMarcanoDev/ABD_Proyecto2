@@ -253,3 +253,66 @@ BEGIN
     END;
 END;
 GO
+
+-- La separación entre la fecha de inicio y la fecha de cierre de un periodo debe corresponder a
+-- su tipo: una semana en los semanales, un mes en los mensuales, un trimestre en los
+-- trimestrales y un año en los anuales.
+CREATE OR ALTER TRIGGER reports.TR_Period_CheckStart_End_Date_Separation_Insert
+ON reports.period
+INSTEAD OF INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO reports.period (id, description, aditional_notes, type, start_date, end_date)
+    SELECT 
+        i.id, 
+        i.description, 
+        i.aditional_notes, 
+        i.type, 
+        i.start_date, 
+        CASE 
+            WHEN i.start_date IS NULL THEN NULL
+            WHEN LOWER(i.type) = 'weekly' 
+                THEN DATEADD(DAY, 6, i.start_date)
+            WHEN LOWER(i.type) = 'monthly' 
+                THEN DATEADD(DAY, -1, DATEADD(MONTH, 1, i.start_date))
+            WHEN LOWER(i.type) = 'quarterly' 
+                THEN DATEADD(DAY, -1, DATEADD(MONTH, 3, i.start_date))
+            WHEN LOWER(i.type) = 'anual' 
+                THEN DATEADD(DAY, -1, DATEADD(YEAR, 1, i.start_date))
+            ELSE i.end_date 
+        END AS calculated_end_date
+    FROM inserted i;
+END;
+GO
+
+CREATE OR ALTER TRIGGER reports.TR_Period_CheckStart_End_Date_Separation_Update
+ON reports.period
+INSTEAD OF UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE p
+    SET 
+        p.description = i.description,
+        p.aditional_notes = i.aditional_notes,
+        p.type = i.type,
+        p.start_date = i.start_date,
+        p.end_date = CASE 
+            WHEN i.start_date IS NULL THEN NULL
+            WHEN LOWER(i.type) = 'weekly' 
+                THEN DATEADD(DAY, 6, i.start_date)
+            WHEN LOWER(i.type) = 'monthly' 
+                THEN DATEADD(DAY, -1, DATEADD(MONTH, 1, i.start_date))
+            WHEN LOWER(i.type) = 'quarterly' 
+                THEN DATEADD(DAY, -1, DATEADD(MONTH, 3, i.start_date))
+            WHEN LOWER(i.type) = 'anual' 
+                THEN DATEADD(DAY, -1, DATEADD(YEAR, 1, i.start_date))
+            ELSE i.end_date 
+        END
+    FROM reports.period p
+    JOIN inserted i ON p.id = i.id;
+END;
+GO

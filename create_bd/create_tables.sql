@@ -248,7 +248,7 @@ CREATE TABLE reports.period (
     description VARCHAR(150) NOT NULL,
     aditional_notes VARCHAR(255),
     type VARCHAR(10) NOT NULL,
-    start_date DATE,
+    start_date DATE NOT NULL,
     end_date DATE,
 
     CONSTRAINT id_period_indx PRIMARY KEY NONCLUSTERED (id) ON FG_Indices,
