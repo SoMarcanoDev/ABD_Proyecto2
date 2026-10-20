@@ -116,7 +116,8 @@ BEGIN
     )
     BEGIN
         -- se resta el monto correspondiente de la entrada de commission_calculation,
-        -- si no existe entrada la creamos con un monto negativo
+        -- si no existe entrada la ignoramos pues cuando se haga el calculo 
+        -- no se deberia de tomar en cuenta el monto descontado
         MERGE reports.commission_calculation AS target
         USING (
             SELECT c.sales_rep_id AS person_id, p.id AS period_id,
@@ -140,10 +141,7 @@ BEGIN
         ) AS source
             ON target.person_id = source.person_id AND target.period_id = source.period_id
         WHEN MATCHED THEN
-            UPDATE SET target.amount = target.amount - source.total_deduct
-        WHEN NOT MATCHED THEN
-            INSERT (person_id, period_id, amount, status)
-            VALUES (source.person_id, source.period_id, -source.total_deduct, 'Clawback');
+            UPDATE SET target.amount = target.amount - source.total_deduct;
     END;
 END;
 GO
