@@ -7,12 +7,12 @@
 - Crear la carpeta `C:\SQLData` (No se si seria mejor crearlo dentro de la instalación de sql server como en el lab?)
 - Ejecutar el script sql `create_bd.sql`, este script crea la base de datos, los files groups y un esquema
 - Ejecutar el script sql `create_tables.sql`, este script genera la estructura base de las tablas de la base de datos segun el modelo relacional
-- Ejecutar el script sql `create_indexes.sql`, este script crea los índices de nombres, foráneas y consultas en el filegroup de índices
-- Ejecutar el script sql `create_views.sql`, este script crea las vistas para consultar e insertar personas
-- Ejecutar el script sql `create_triggers.sql`, este script crea los triggers de integridad y las inserciones por medio de vistas
+- Ejecutar el script sql `create_indexes.sql`, este script crea los indices que empleara la base de datos
+- Ejecutar el script sql `create_views.sql`, este script crea las vistas de la base de datos
+- Ejecutar el script sql `create_triggers.sql`, este script crea los triggers solicitados en el enunciado y otros triggers que aplican reglas del negocio.
 - Ejecutar el script sql `create_roles.sql`, este script crea el usuario dueño del esquema sin login, los roles y sus permisos
-- Ejecutar los scripts de `populate_bd/` para insertar los datos de prueba
-- TO BE CONTINUED (triggers, checks, indices, etc).
+- Ejecutar el script sql `populate_triggers.sql`, este inserta 10 registros por tabla de la base de datos con valores coherentes y respetando las restricciones de cada valor o columna.
+- TO BE CONTINUED
 
 
 ## Preguntas
