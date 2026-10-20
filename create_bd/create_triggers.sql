@@ -206,3 +206,50 @@ BEGIN
     FROM inserted;
 END;
 GO
+
+-- ============================================================
+-- Triggers de reglas de integridad
+-- ============================================================
+-- Solo las personas activas pueden incorporarse como vendedores en nuevas facturas
+CREATE OR ALTER TRIGGER reports.TR_Commission_CheckSales_Rep_Active
+ON reports.commission
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        JOIN reports.person s ON i.sales_rep_id = s.id
+        WHERE s.status = 0
+    )
+    BEGIN
+        RAISERROR ('Solo las personas activas pueden incorporarse como vendedores en nuevas facturas.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END;
+END;
+GO
+
+-- Solo las personas activas pueden recibir nuevas asignaciones de plan.
+CREATE OR ALTER TRIGGER reports.TR_Commission_Plan_CheckSales_Rep_Active
+ON reports.commission_plan_history
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        JOIN reports.person s ON i.sales_rep_id = s.id
+        WHERE s.status = 0
+    )
+    BEGIN
+        RAISERROR ('Solo las personas activas pueden recibir nuevas asignaciones de plan.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END;
+END;
+GO
