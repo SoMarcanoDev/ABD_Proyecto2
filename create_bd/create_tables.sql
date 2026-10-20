@@ -44,7 +44,7 @@ CREATE TABLE reports.person (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL,
-    hired_date DATE,
+    hired_date DATE NOT NULL,
     status BIT NOT NULL CONSTRAINT DF_Active_Person DEFAULT 1,
     CONSTRAINT id_person_indx PRIMARY KEY NONCLUSTERED (id) ON FG_Indices
 ) ON FG_Tables;
@@ -52,7 +52,7 @@ GO
 
 CREATE TABLE reports.sales_rep (
     id INT NOT NULL,
-    sales_quota DECIMAL(12, 2), -- asumiendo que es distinta a la comision?
+    sales_quota DECIMAL(12, 2) NOT NULL, -- asumiendo que es distinta a la comision?
 
     CONSTRAINT id_sales_rep_indx PRIMARY KEY NONCLUSTERED (id) ON FG_Indices,
     -- porque sql server no deja hacer herencias directamente.
@@ -140,6 +140,8 @@ CREATE TABLE reports.recit (
         (LOWER(status) != 'paid' OR date_paid IS NOT NULL) -- si esta pagada es no nula
         AND (LOWER(status) = 'paid' OR date_paid IS NULL)  -- si no esta pagada es nula
     ),
+    -- Ninguna factura puede registrar una fecha de cobro anterior a su fecha de emisión.
+    CONSTRAINT CK_Date_Paid_After_Emmited CHECK (date_paid IS NULL OR date_paid >= date_created),
     CONSTRAINT FK_client_recit FOREIGN KEY (client_id) REFERENCES reports.client(id),
 ) ON FG_Tables;
 GO

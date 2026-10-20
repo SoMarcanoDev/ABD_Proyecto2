@@ -116,7 +116,8 @@ BEGIN
     )
     BEGIN
         -- se resta el monto correspondiente de la entrada de commission_calculation,
-        -- si no existe entrada la creamos con un monto negativo
+        -- si no existe entrada la ignoramos pues cuando se haga el calculo 
+        -- no se deberia de tomar en cuenta el monto descontado
         MERGE reports.commission_calculation AS target
         USING (
             SELECT c.sales_rep_id AS person_id, p.id AS period_id,
@@ -140,10 +141,7 @@ BEGIN
         ) AS source
             ON target.person_id = source.person_id AND target.period_id = source.period_id
         WHEN MATCHED THEN
-            UPDATE SET target.amount = target.amount - source.total_deduct
-        WHEN NOT MATCHED THEN
-            INSERT (person_id, period_id, amount, status)
-            VALUES (source.person_id, source.period_id, -source.total_deduct, 'Clawback');
+            UPDATE SET target.amount = target.amount - source.total_deduct;
     END;
 END;
 GO
@@ -206,5 +204,52 @@ BEGIN
     INSERT INTO reports.finance_team_member (id, job_title)
     SELECT id, job_title
     FROM inserted;
+END;
+GO
+
+-- ============================================================
+-- Triggers de reglas de integridad
+-- ============================================================
+-- Solo las personas activas pueden incorporarse como vendedores en nuevas facturas
+CREATE OR ALTER TRIGGER reports.TR_Commission_CheckSales_Rep_Active
+ON reports.commission
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        JOIN reports.person s ON i.sales_rep_id = s.id
+        WHERE s.status = 0
+    )
+    BEGIN
+        RAISERROR ('Solo las personas activas pueden incorporarse como vendedores en nuevas facturas.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END;
+END;
+GO
+
+-- Solo las personas activas pueden recibir nuevas asignaciones de plan.
+CREATE OR ALTER TRIGGER reports.TR_Commission_Plan_CheckSales_Rep_Active
+ON reports.commission_plan_history
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        JOIN reports.person s ON i.sales_rep_id = s.id
+        WHERE s.status = 0
+    )
+    BEGIN
+        RAISERROR ('Solo las personas activas pueden recibir nuevas asignaciones de plan.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END;
 END;
 GO
