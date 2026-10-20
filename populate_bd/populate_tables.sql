@@ -295,16 +295,13 @@ VALUES (2, 2, 102, 1.00);
 INSERT INTO reports.commission (sales_rep_id, role_id, recit_number, participation_percentage)
 VALUES (3, 1, 103, 1.00);
 
-
 INSERT INTO reports.commission (sales_rep_id, role_id, recit_number, participation_percentage)
 VALUES (4, 3, 105, 0.70);
 INSERT INTO reports.commission (sales_rep_id, role_id, recit_number, participation_percentage)
 VALUES (5, 4, 105, 0.30);
 
-
 INSERT INTO reports.commission (sales_rep_id, role_id, recit_number, participation_percentage)
 VALUES (6, 1, 106, 1.00);
-
 
 INSERT INTO reports.commission (sales_rep_id, role_id, recit_number, participation_percentage)
 VALUES (7, 1, 107, 1.00);
@@ -316,6 +313,12 @@ VALUES (9, 2, 109, 0.50);
 
 INSERT INTO reports.commission (sales_rep_id, role_id, recit_number, participation_percentage)
 VALUES (10, 1, 110, 1.00);
+
+INSERT INTO reports.commission (sales_rep_id, role_id, recit_number, participation_percentage)
+VALUES (4, 3, 104, 0.30);
+
+INSERT INTO reports.commission (sales_rep_id, role_id, recit_number, participation_percentage)
+VALUES (8, 5, 108, 1.00);
 GO
 
 -- planes de comisiones
@@ -406,6 +409,9 @@ VALUES (7, 1, 7, '2025-07-01');
 
 INSERT INTO reports.commission_plan_history (sales_rep_id, role_id, commission_plan_code, start_date)
 VALUES (8, 5, 8, '2025-08-01');
+
+INSERT INTO reports.commission_plan_history (sales_rep_id, role_id, commission_plan_code, start_date)
+VALUES (8, 5, 2, '2026-04-12');
 
 INSERT INTO reports.commission_plan_history (sales_rep_id, role_id, commission_plan_code, start_date)
 VALUES (9, 2, 9, '2025-09-01');
