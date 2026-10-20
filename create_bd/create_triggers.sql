@@ -81,24 +81,72 @@ END;
 GO
 
 -- 3. Recupero por devolución
--- CREATE OR ALTER TRIGGER reports.TR_Recit_CheckDevolution_Commission
--- ON reports.recit
--- AFTER UPDATE -- no sé si deberia dispararse con inserts también?
--- AS 
--- BEGIN
---     SET NOCOUNT ON;
+CREATE OR ALTER TRIGGER reports.TR_Recit_CheckDevolution_Commission
+ON reports.recit
+AFTER UPDATE -- no sé si deberia dispararse con inserts también?
+AS 
+BEGIN
+    SET NOCOUNT ON;
+    -- verificar si el cambio fue del estado y es a anulado
+    IF NOT EXISTS (
+        SELECT 1
+        FROM inserted i
+        JOIN deleted d ON i.number = d.number
+        WHERE LOWER(i.status) = 'canceled'
+            AND LOWER(d.status) <> 'canceled'
+    )
+    RETURN;
 
---     -- verifica que el registro modificado tiene el estado de anulada
---     IF EXISTS (
---         SELECT 1
---         FROM inserted i
---         WHERE LOWER(status) = 'canceled'
---     )
---     BEGIN
---         -- Esto no hace nada ahorita ya sé jsjsj
---     END;
--- END;
--- GO
+    -- verifica si el plan de comisión asociado tiene la opcion de discount
+    IF EXISTS (
+        SELECt 1
+        FROM reports.commission_plan_history cph
+        INNER JOIN (
+            SELECT cph.sales_rep_id, cph.role_id, MAX(cph.start_date) latest_date
+            FROM reports.commission_plan_history cph
+            JOIN reports.commission c ON c.sales_rep_id = cph.sales_rep_id AND c.role_id = cph.role_id
+            JOIN inserted i ON i.number = c.recit_number
+            WHERE LOWER(i.status) = 'canceled'
+            GROUP BY cph.sales_rep_id, cph.role_id
+        ) cph_max ON cph_max.sales_rep_id = cph.sales_rep_id 
+            AND cph_max.role_id = cph.role_id 
+            AND cph_max.latest_date = cph.start_date
+        JOIN reports.commission_plan cp ON cp.code = cph.commission_plan_code
+        WHERE cp.discount = 1
+    )
+    BEGIN
+        -- se resta el monto correspondiente de la entrada de commission_calculation,
+        -- si no existe entrada la creamos con un monto negativo
+        MERGE reports.commission_calculation AS target
+        USING (
+            SELECT c.sales_rep_id AS person_id, p.id AS period_id,
+                SUM(rd.product_subtotal * c.participation_percentage * cp.commission_rate) AS total_deduct
+            FROM inserted i
+            JOIN reports.period p 
+                ON i.date_created >= p.start_date AND i.date_created <= p.end_date
+            JOIN reports.recit_detail rd ON i.number = rd.number_recit
+            JOIN reports.commission c ON c.recit_number = i.number
+            CROSS APPLY (
+                SELECT TOP 1 cph.commission_plan_code
+                FROM reports.commission_plan_history cph
+                WHERE cph.sales_rep_id = c.sales_rep_id 
+                  AND cph.role_id = c.role_id
+                  AND (cph.start_date <= i.date_created OR cph.start_date IS NULL)
+                ORDER BY cph.start_date DESC
+            ) latest_cph
+            JOIN reports.commission_plan cp ON cp.code = latest_cph.commission_plan_code
+            WHERE LOWER(i.status) = 'canceled' AND cp.discount = 1
+            GROUP BY c.sales_rep_id, p.id
+        ) AS source
+            ON target.person_id = source.person_id AND target.period_id = source.period_id
+        WHEN MATCHED THEN
+            UPDATE SET target.amount = target.amount - source.total_deduct
+        WHEN NOT MATCHED THEN
+            INSERT (person_id, period_id, amount, status)
+            VALUES (source.person_id, source.period_id, -source.total_deduct, 'Clawback');
+    END;
+END;
+GO
 
 -- ============================================================
 -- Triggers para la inserción de personas
