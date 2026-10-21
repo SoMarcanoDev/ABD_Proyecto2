@@ -127,35 +127,36 @@ VALUES (30, 'Catalina', 'Mendoza', 'catalina.mendoza@email.com', '2020-06-01', 1
 GO
 
 -- productos
-INSERT INTO reports.product (id, name, category)
-VALUES (1, 'Enterprise CRM License', 'Software');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (1, 'Enterprise CRM License', 'Software', 500.00);
 
-INSERT INTO reports.product (id, name, category)
-VALUES (2, 'Cloud Storage 1TB (Annual)', 'Cloud Services');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (2, 'Cloud Storage 1TB (Annual)', 'Cloud Services', 120.00);
 
-INSERT INTO reports.product (id, name, category)
-VALUES (3, 'Ergonomic Office Chair', 'Office Furniture');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (3, 'Ergonomic Office Chair', 'Office Furniture', 150.00);
 
-INSERT INTO reports.product (id, name, category)
-VALUES (4, 'Wireless Mechanical Keyboard', 'Hardware');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (4, 'Wireless Mechanical Keyboard', 'Hardware', 45.00);
 
-INSERT INTO reports.product (id, name, category)
-VALUES (5, 'Ultrawide 34" Monitor', 'Hardware');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (5, 'Ultrawide 34" Monitor', 'Hardware', 400.00);
 
-INSERT INTO reports.product (id, name, category)
-VALUES (6, 'Project Management Tool (Annual)', 'Software');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (6, 'Project Management Tool (Annual)', 'Software', 500.00);
 
-INSERT INTO reports.product (id, name, category)
-VALUES (7, 'Electric Standing Desk', 'Office Furniture');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (7, 'Electric Standing Desk', 'Office Furniture', 300.00);
 
-INSERT INTO reports.product (id, name, category)
-VALUES (8, 'Noise-Canceling Headset', 'Hardware');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (8, 'Noise-Canceling Headset', 'Hardware', 50.00);
 
-INSERT INTO reports.product (id, name, category)
-VALUES (9, 'Cybersecurity Suite', 'Software');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (9, 'Cybersecurity Suite', 'Software', 1200.00);            
 
-INSERT INTO reports.product (id, name, category)
-VALUES (10, 'HD Document Scanner', 'Hardware');
+INSERT INTO reports.product (id, name, category, unit_price)
+VALUES (10, 'HD Document Scanner', 'Hardware', 150.00);             
+GO
 
 -- clientes
 INSERT INTO reports.client (id, first_name, last_name, market_segment)
