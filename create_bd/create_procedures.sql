@@ -139,7 +139,7 @@ BEGIN
         FROM reports.commission_calculation
         WHERE period_id = @period_id_calculo
           AND amount > 0
-          AND LOWER(status) <> 'pagado'
+          AND LOWER(status) <> 'paid'
     )
     BEGIN
         RAISERROR ('No existen comisiones calculadas pendientes de pago para el periodo indicado.', 16, 1);
@@ -158,24 +158,24 @@ BEGIN
             FROM reports.commission_calculation
             WHERE period_id = @period_id_calculo
               AND amount > 0
-              AND LOWER(status) <> 'pagado'
+              AND LOWER(status) <> 'paid'
         ) AS source
         ON target.person_id = source.person_id AND target.period_id = @period_id_pago
         WHEN MATCHED THEN
             UPDATE SET
                 target.amount = source.amount,
                 target.date_paid = @fecha_pago,
-                target.status = 'Pagado'
+                target.status = 'Paid'
         WHEN NOT MATCHED THEN
             INSERT (person_id, period_id, amount, date_paid, status)
-            VALUES (source.person_id, @period_id_pago, source.amount, @fecha_pago, 'Pagado');
+            VALUES (source.person_id, @period_id_pago, source.amount, @fecha_pago, 'Paid');
 
         --actualizar el estado en reports.commission_calculation a pagado
         UPDATE reports.commission_calculation
-        SET status = 'Pagado'
+        SET status = 'Paid'
         WHERE period_id = @period_id_calculo
           AND amount > 0
-          AND LOWER(status) <> 'pagado';
+          AND LOWER(status) <> 'paid';
 
         COMMIT TRANSACTION;
     END TRY
