@@ -93,7 +93,8 @@ CREATE TABLE reports.works_under (
         PRIMARY KEY NONCLUSTERED (sales_rep_id, supervisor_id, validity_date)
         ON FG_Indices,
     CONSTRAINT FK_Works_Under_Sales_Rep_Id FOREIGN KEY (sales_rep_id) REFERENCES reports.sales_rep(id),
-    CONSTRAINT FK_Works_Under_Supervisor_Id FOREIGN KEY (supervisor_id) REFERENCES reports.supervisor(id)
+    CONSTRAINT FK_Works_Under_Supervisor_Id FOREIGN KEY (supervisor_id) REFERENCES reports.supervisor(id),
+    CONSTRAINT CK_Recognition_Rate CHECK (recognition_rate >= 0 AND recognition_rate <= 1.00)
 ) ON FG_Tables;
 GO
 
@@ -142,7 +143,7 @@ CREATE TABLE reports.recit (
     ),
     -- Ninguna factura puede registrar una fecha de cobro anterior a su fecha de emisión.
     CONSTRAINT CK_Date_Paid_After_Emmited CHECK (date_paid IS NULL OR date_paid >= date_created),
-    CONSTRAINT FK_client_recit FOREIGN KEY (client_id) REFERENCES reports.client(id),
+    CONSTRAINT FK_client_recit FOREIGN KEY (client_id) REFERENCES reports.client(id)
 ) ON FG_Tables;
 GO
 
@@ -157,7 +158,9 @@ CREATE TABLE reports.recit_detail (
         PRIMARY KEY NONCLUSTERED (number_recit, product_id)
         ON FG_Indices,
     CONSTRAINT FK_number_recit FOREIGN KEY (number_recit) REFERENCES reports.recit(number),
-    CONSTRAINT FK_product_recit FOREIGN KEY (product_id) REFERENCES reports.product(id)
+    CONSTRAINT FK_product_recit FOREIGN KEY (product_id) REFERENCES reports.product(id),
+    CONSTRAINT CK_subtotal_positivo CHECK (product_subtotal >= 0),
+    CONSTRAINT CK_quantity_positivo CHECK (product_quantity > 0)
 ) ON FG_Tables;
 GO
 
@@ -202,7 +205,8 @@ CREATE TABLE reports.commission_plan (
     discount BIT NOT NULL CONSTRAINT DF_Has_Discount DEFAULT 0,
     
     CONSTRAINT code_commission_plan_indx PRIMARY KEY NONCLUSTERED (code) ON FG_Indices,
-    CONSTRAINT CK_Commission_Plan_Base CHECK (LOWER(base) IN ('income', 'margin', 'quantity'))
+    CONSTRAINT CK_Commission_Plan_Base CHECK (LOWER(base) IN ('income', 'margin', 'quantity')),
+    CONSTRAINT CK_Commission_Rate CHECK (commission_rate >= 0 AND commission_rate <= 1.00)
 ) ON FG_Tables;
 GO
 
@@ -228,8 +232,8 @@ CREATE TABLE reports.commission_plan_history (
     commission_plan_code INT NOT NULL,
     start_date DATE NOT NULL,
 
-    CONSTRAINT sales_rep_id_role_id_commission_plan_code_start_date_commission_plan_history_indx
-        PRIMARY KEY NONCLUSTERED (sales_rep_id, role_id, commission_plan_code, start_date)
+    CONSTRAINT sales_rep_id_role_id_start_date_commission_plan_history_indx
+        PRIMARY KEY NONCLUSTERED (sales_rep_id, role_id, start_date)
         ON FG_Indices,
     CONSTRAINT FK_Commission_Plan_Hist_Sales_Rep_Id FOREIGN KEY (sales_rep_id)
         REFERENCES reports.sales_rep(id),
@@ -270,7 +274,8 @@ CREATE TABLE reports.payment (
         PRIMARY KEY NONCLUSTERED (period_id, person_id)
         ON FG_Indices,
     CONSTRAINT FK_Payment_Person_Id FOREIGN KEY (person_id) REFERENCES reports.person,
-    CONSTRAINT FK_Payment_Period_Id FOREIGN KEY (period_id) REFERENCES reports.period
+    CONSTRAINT FK_Payment_Period_Id FOREIGN KEY (period_id) REFERENCES reports.period,
+    CONSTRAINT CK_Payment_Amount CHECK (amount >= 0)
 ) ON FG_Tables;
 GO
 
@@ -287,6 +292,7 @@ CREATE TABLE reports.commission_calculation (
         PRIMARY KEY NONCLUSTERED (period_id, person_id)
         ON FG_Indices,
     CONSTRAINT FK_Commission_Calc_Person_Id FOREIGN KEY (person_id) REFERENCES reports.person,
-    CONSTRAINT FK_Commission_Calc_Period_Id FOREIGN KEY (period_id) REFERENCES reports.period
+    CONSTRAINT FK_Commission_Calc_Period_Id FOREIGN KEY (period_id) REFERENCES reports.period,
+    CONSTRAINT CK_Calc_Amount CHECK (amount >= 0)
 ) ON FG_Tables;
 GO
