@@ -316,3 +316,41 @@ BEGIN
     JOIN inserted i ON p.id = i.id;
 END;
 GO
+
+-- calcular automaticamente el subtotal segun el precio unitario de producto en los detalles de factura
+CREATE OR ALTER TRIGGER reports.TR_Recit_Detail_CheckSubtotal_Insert
+ON reports.recit_detail
+INSTEAD OF INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO reports.recit_detail (number_recit, product_id, product_quantity, product_subtotal, sale_concept)
+    SELECT 
+        i.number_recit, 
+        i.product_id, 
+        i.product_quantity, 
+        p.unit_price * i.product_quantity,
+        i.sale_concept
+    FROM inserted i
+    JOIN reports.product p ON p.id = i.product_id;
+END;
+GO
+
+CREATE OR ALTER TRIGGER reports.TR_Recit_Detail_CheckSubtotal_Update
+ON reports.recit_detail
+INSTEAD OF UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE rd
+    SET 
+        rd.product_quantity = i.product_quantity,
+        rd.product_subtotal = p.unit_price * i.product_quantity,
+        rd.sale_concept = i.sale_concept
+    FROM reports.recit_detail rd
+    JOIN inserted i ON rd.number_recit = i.number_recit AND rd.product_id = i.product_id
+    JOIN reports.product p ON p.id = i.product_id;
+END;
+GO
