@@ -64,7 +64,7 @@ GO
 
 -- Vendedores
 INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
-VALUES (1, 'John', 'Doe', 'john@email.com', '2026-03-01', 0, 50000.00, 11, '2026-03-01', 0.0500);
+VALUES (1, 'John', 'Doe', 'john@email.com', '2026-03-01', 1, 50000.00, 11, '2026-03-01', 0.0500);
 
 INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
 VALUES (2, 'Miguelangel', 'Parra', 'migue13parra@email.com', '2025-06-04', 1, 60000.00, 12, '2025-06-04', 0.0650);
@@ -79,7 +79,7 @@ INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, 
 VALUES (5, 'Carlos', 'Mendoza', 'carlos.mendoza@email.com', '2025-01-15', 1, 55000.00, 15, '2025-01-15', 0.0550);
 
 INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
-VALUES (6, 'Sofia', 'Gomez', 'sofi.gomez@email.com', '2023-11-10', 0, 32000.00, 16, '2023-11-10', 0.0300);
+VALUES (6, 'Sofia', 'Gomez', 'sofi.gomez@email.com', '2023-11-10', 1, 32000.00, 16, '2023-11-10', 0.0300);
 
 INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
 VALUES (7, 'Lucas', 'Silva', 'lucas.silva@email.com', '2026-02-14', 1, 72000.00, 17, '2026-02-14', 0.0800);
@@ -88,7 +88,7 @@ INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, 
 VALUES (8, 'Valeria', 'Ruiz', 'valeria.ruiz@email.com', '2025-08-19', 1, 41000.00, 18, '2025-08-19', 0.0450);
 
 INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
-VALUES (9, 'Mateo', 'Morales', 'mateo.m@email.com', '2024-05-22', 0, 29000.00, 19, '2024-05-22', 0.0350);
+VALUES (9, 'Mateo', 'Morales', 'mateo.m@email.com', '2024-05-22', 1, 29000.00, 19, '2024-05-22', 0.0350);
 
 INSERT INTO reports.vw_sales_rep (id, first_name, last_name, email, hired_date, status, sales_quota, supervisor_id, supervisor_validity_date, recognition_rate)
 VALUES (10, 'Lucia', 'Fernandez', 'lucia.f@email.com', '2026-01-05', 1, 95000.00, 20, '2026-01-05', 0.0900);
@@ -520,3 +520,8 @@ VALUES (12, 4, 8400.00, 'Calculated');
 INSERT INTO reports.commission_calculation (person_id, period_id, amount, status)
 VALUES (13, 5, 9100.00, 'Approved');
 GO
+
+-- Por restricciones de los triggers de commission y commission_plan 
+-- todos los vendedores se crean activos para poder hacer las inserciones
+-- Para tener vendedores innactivos en la bd alteramos los registros de ultimo
+UPDATE reports.person SET status = 0 WHERE id IN (1, 6, 9);
