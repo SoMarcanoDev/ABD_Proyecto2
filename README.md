@@ -8,7 +8,7 @@
 - Ejecutar el script sql `create_bd.sql`, este script crea la base de datos, los files groups y un esquema
 - Ejecutar el script sql `create_tables.sql`, este script genera la estructura base de las tablas de la base de datos segun el modelo relacional
 - Ejecutar el script sql `create_indexes.sql`, este script crea los indices que empleara la base de datos
-- Ejecutar el script sql `create_views.sql`, este script crea las vistas de la base de datos
+- Ejecutar el script sql `create_views.sql`, este script crea las vistas de personas y la vista de reporte de pagos para finanzas
 - Ejecutar el script sql `create_functions.sql`, este script crea la función para calcular la base comisionable según los filtros del plan
 - Ejecutar el script sql `create_procedures.sql`, este script crea los procedimientos para calcular comisiones y registrar pagos
 - Ejecutar el script sql `create_triggers.sql`, este script crea los triggers solicitados en el enunciado y otros triggers que aplican reglas del negocio.
