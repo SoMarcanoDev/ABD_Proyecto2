@@ -107,3 +107,84 @@ BEGIN
     DROP TABLE #comisiones_vendedores;
 END;
 GO
+
+CREATE OR ALTER PROCEDURE reports.sp_registrar_pagos
+    @period_id_calculo INT,
+    @period_id_pago INT,
+    @fecha_pago DATE = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    --validar que ambos periodos existan
+    IF NOT EXISTS (SELECT 1 FROM reports.period WHERE id = @period_id_calculo)
+    BEGIN
+        RAISERROR ('El periodo de calculo especificado no existe.', 16, 1);
+        RETURN;
+    END;
+
+    IF NOT EXISTS (SELECT 1 FROM reports.period WHERE id = @period_id_pago)
+    BEGIN
+        RAISERROR ('El periodo de pago especificado no existe.', 16, 1);
+        RETURN;
+    END;
+
+    --si no se envia fecha de pago, se toma la fecha actual
+    IF @fecha_pago IS NULL
+        SET @fecha_pago = CAST(GETDATE() AS DATE);
+
+    --validar que existan comisiones calculadas y pendientes de pago para ese periodo
+    IF NOT EXISTS (
+        SELECT 1
+        FROM reports.commission_calculation
+        WHERE period_id = @period_id_calculo
+          AND amount > 0
+          AND LOWER(status) <> 'pagado'
+    )
+    BEGIN
+        RAISERROR ('No existen comisiones calculadas pendientes de pago para el periodo indicado.', 16, 1);
+        RETURN;
+    END;
+
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        --insertar o actualizar los pagos en reports.payment
+        MERGE reports.payment AS target
+        USING (
+            SELECT
+                person_id,
+                amount
+            FROM reports.commission_calculation
+            WHERE period_id = @period_id_calculo
+              AND amount > 0
+              AND LOWER(status) <> 'pagado'
+        ) AS source
+        ON target.person_id = source.person_id AND target.period_id = @period_id_pago
+        WHEN MATCHED THEN
+            UPDATE SET
+                target.amount = source.amount,
+                target.date_paid = @fecha_pago,
+                target.status = 'Pagado'
+        WHEN NOT MATCHED THEN
+            INSERT (person_id, period_id, amount, date_paid, status)
+            VALUES (source.person_id, @period_id_pago, source.amount, @fecha_pago, 'Pagado');
+
+        --actualizar el estado en reports.commission_calculation a pagado
+        UPDATE reports.commission_calculation
+        SET status = 'Pagado'
+        WHERE period_id = @period_id_calculo
+          AND amount > 0
+          AND LOWER(status) <> 'pagado';
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR (@ErrorMessage, 16, 1);
+    END CATCH;
+END;
+GO
